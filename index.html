@@ -1,87 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Infinity World Coin – Collectible Coins Store</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Infinity World Coin – Collectible Coins Store</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ── GITHUB AUTH & LISTING OVERRIDES ── */
+.top-bar .gh-btn{display:flex;align-items:center;gap:5px;background:#24292e;color:#fff;border:none;padding:5px 12px;border-radius:5px;font-size:12px;cursor:pointer;text-decoration:none}
+.top-bar .gh-btn svg{width:14px;height:14px;fill:#fff}
+.top-bar .gh-btn.signed{background:#2ea44f}
+#add-listing-btn{background:linear-gradient(90deg,#e53238,#0064d2,#f5af02,#86b817);color:#fff;border:none;padding:7px 16px;border-radius:5px;font-weight:700;font-size:13px;cursor:pointer;margin-left:8px}
+/* MODAL */
+.iwc-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+.iwc-modal.open{display:flex}
+.iwc-box{background:#fff;border-radius:10px;padding:24px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto}
+.iwc-box h3{font-size:18px;font-weight:700;margin-bottom:16px;color:#111}
+.iwc-box label{display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:3px;margin-top:10px}
+.iwc-box input,.iwc-box textarea,.iwc-box select{width:100%;padding:9px;border:1px solid #ccc;border-radius:5px;font-size:13px;margin-bottom:2px;font-family:inherit}
+.iwc-box textarea{min-height:60px;resize:vertical}
+.iwc-box .mrow{display:flex;gap:8px;margin-top:14px}
+.iwc-box .mbtn{flex:1;padding:10px;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer;border:none}
+.iwc-box .mbtn.confirm{background:linear-gradient(90deg,#e53238,#0064d2);color:#fff}
+.iwc-box .mbtn.cancel{background:#f5f5f5;color:#555;border:1px solid #ccc}
+.gh-note{font-size:11px;color:#666;background:#f6f8fa;padding:8px;border-radius:4px;line-height:1.5;margin-bottom:12px}
+.gh-note a{color:#0064d2}
+.gh-note code{background:#eee;padding:1px 4px;border-radius:3px;font-size:10px}
+/* USER LISTING BADGE */
+.badge-mine{background:#0064d2;color:#fff}
+/* INFINITY LOGO */
+.inf-logo-wrap{display:flex;align-items:center;gap:8px}
+.inf-symbol{font-size:2.4rem;font-weight:900;background:linear-gradient(90deg,#e53238 0%,#0064d2 35%,#f5af02 65%,#86b817 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;letter-spacing:-2px}
+.inf-wordmark{display:flex;flex-direction:column}
+.inf-wordmark .w1{font-size:22px;font-weight:900;color:#111;letter-spacing:-0.5px}
+.inf-wordmark .w2{font-size:11px;color:#777;letter-spacing:0.5px;margin-top:-2px}
+</style>
+</head><body>
 
-<!-- ══════════════════════════════════════════════
-     TOP UTILITY BAR
-══════════════════════════════════════════════ -->
+<!-- TOP BAR -->
 <div class="top-bar">
   <div class="top-bar-left">
-    <span>Hi! <a href="#">Sign in</a> or <a href="#">register</a></span>
-    <a href="#">Daily Deals</a>
-    <a href="#">Help &amp; Contact</a>
+    <span id="greeting-text">Hi! <a href="#" onclick="openGHModal();return false">Sign in with GitHub</a></span>
+    <a href="#featured-banner">Daily Deals</a>
+    <a href="#contact-section">Help &amp; Contact</a>
   </div>
   <div class="top-bar-right">
     <a href="#">Ship to United States</a>
     <a href="#watchlist">Watchlist</a>
-    <a href="https://www.paypal.com" target="_blank" rel="noopener">
-      Pay securely with
-      <strong>
-        <span style="color:#003087">Pay</span><span style="color:#009cde">Pal</span>
-      </strong>
-    </a>
+    <button id="add-listing-btn" onclick="openListingModal()">+ List an Item</button>
+    <a href="https://www.paypal.com" target="_blank" rel="noopener">Pay securely with <strong><span style="color:#003087">Pay</span><span style="color:#009cde">Pal</span></strong></a>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     MAIN HEADER
-══════════════════════════════════════════════ -->
+<!-- HEADER -->
 <header class="site-header">
   <div class="header-inner">
-
-    <!-- Store logo -->
-    <a href="index.html" class="store-logo" style="text-decoration:none;">
-      <div class="logo-name" aria-label="Infinity World Coin">
-        <span class="logo-i">I</span><span class="logo-n">n</span><span
-          class="logo-f">f</span><span class="logo-i2">i</span><span
-          class="logo-n2">n</span><span class="logo-i3">i</span><span
-          class="logo-t">t</span><span class="logo-y">y</span>
-        &nbsp;<span style="color:#111">World Coin</span>
+    <a href="index.html" class="store-logo inf-logo-wrap" style="text-decoration:none">
+      <div class="inf-symbol">∞</div>
+      <div class="inf-wordmark">
+        <span class="w1">Infinity World Coin</span>
+        <span class="w2">Collectible &amp; Rare Coins</span>
       </div>
-      <span class="logo-tagline">Collectible &amp; Rare Coins</span>
     </a>
-
-    <!-- Search form -->
     <form class="search-form" onsubmit="return searchItems(event)">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Search coins, sets, and more…"
-        aria-label="Search store"
-      />
+      <input type="text" id="searchInput" placeholder="Search coins, sets, and more…" aria-label="Search store">
       <button type="submit">Search</button>
     </form>
-
-    <!-- Header actions -->
     <div class="header-actions">
       <a href="#watchlist">Watchlist</a>
-      <a href="https://www.paypal.com/myaccount/summary" target="_blank" rel="noopener">My Account</a>
-      <!-- Cart icon -->
-      <a href="https://www.paypal.com/webapps/mpp/cart" target="_blank" rel="noopener"
-         class="cart-icon" title="View PayPal Cart">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-             stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0
-                   2-1.61L23 6H6"/>
-        </svg>
-        <span id="cartCount" class="cart-badge">0</span>
-        Cart
+      <a href="#" onclick="openGHModal();return false" id="account-link">My Account</a>
+      <a href="https://www.paypal.com/webapps/mpp/cart" target="_blank" rel="noopener" class="cart-icon" title="View PayPal Cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span id="cartCount" class="cart-badge">0</span>Cart
       </a>
     </div>
-
   </div>
 </header>
 
-<!-- ══════════════════════════════════════════════
-     CATEGORY NAVIGATION
-══════════════════════════════════════════════ -->
+<!-- CATEGORY NAV -->
 <nav class="category-nav" aria-label="Store categories">
   <ul>
     <li><a href="#" class="active" onclick="filterCategory('all',this)">All Items</a></li>
@@ -92,58 +83,37 @@
     <li><a href="#" onclick="filterCategory('set',this)">Mint Sets</a></li>
     <li><a href="#" onclick="filterCategory('error',this)">Error Coins</a></li>
     <li><a href="#" onclick="filterCategory('note',this)">Paper Money</a></li>
+    <li><a href="#" onclick="filterCategory('mine',this)" style="color:#0064d2;font-weight:700">My Listings</a></li>
   </ul>
 </nav>
 
-<!-- ══════════════════════════════════════════════
-     STORE BANNER
-══════════════════════════════════════════════ -->
-<div class="store-banner">
-  <h1>🪙 Infinity World Coin</h1>
-  <p>Your trusted source for certified, rare, and collectible coins from around the world.
-     Every purchase is protected by
-     <strong>Pay<span style="color:#56aadf">Pal</span></strong> Buyer Protection.</p>
+<!-- BANNER -->
+<div class="store-banner" id="featured-banner">
+  <h1>∞ Infinity World Coin</h1>
+  <p>Your trusted source for certified, rare, and collectible coins. Every purchase protected by <strong>Pay<span style="color:#56aadf">Pal</span></strong> Buyer Protection.</p>
   <div class="banner-stats">
-    <div class="banner-stat">
-      <strong>4,800+</strong>
-      Positive Feedback
-    </div>
-    <div class="banner-stat">
-      <strong>99.8%</strong>
-      Satisfaction Rate
-    </div>
-    <div class="banner-stat">
-      <strong>12 yrs</strong>
-      Selling Experience
-    </div>
-    <div class="banner-stat">
-      Feedback score
-      <span class="feedback-score">★ 4.9 / 5</span>
-    </div>
+    <div class="banner-stat"><strong>4,800+</strong> Positive Feedback</div>
+    <div class="banner-stat"><strong>99.8%</strong> Satisfaction Rate</div>
+    <div class="banner-stat"><strong>12 yrs</strong> Selling Experience</div>
+    <div class="banner-stat">Feedback <span class="feedback-score">★ 4.9 / 5</span></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     MAIN PAGE CONTENT
-══════════════════════════════════════════════ -->
+<!-- PAGE CONTAINER -->
 <div class="page-container">
-
-  <!-- ── Left Sidebar ──────────────────────── -->
   <aside class="sidebar">
-
     <div class="sidebar-section">
       <h3>Categories</h3>
       <ul>
-        <li><a href="#" class="active" onclick="filterCategory('all',this)">All Items <span class="count">(48)</span></a></li>
-        <li><a href="#" onclick="filterCategory('us',this)">US Coins <span class="count">(14)</span></a></li>
-        <li><a href="#" onclick="filterCategory('world',this)">World Coins <span class="count">(12)</span></a></li>
-        <li><a href="#" onclick="filterCategory('ancient',this)">Ancient Coins <span class="count">(6)</span></a></li>
-        <li><a href="#" onclick="filterCategory('gold',this)">Gold &amp; Silver <span class="count">(8)</span></a></li>
-        <li><a href="#" onclick="filterCategory('set',this)">Mint Sets <span class="count">(5)</span></a></li>
-        <li><a href="#" onclick="filterCategory('error',this)">Error Coins <span class="count">(3)</span></a></li>
+        <li><a href="#" class="active" onclick="filterCategory('all',this)">All Items <span class="count" id="count-all">(12)</span></a></li>
+        <li><a href="#" onclick="filterCategory('us',this)">US Coins <span class="count">(4)</span></a></li>
+        <li><a href="#" onclick="filterCategory('world',this)">World Coins <span class="count">(3)</span></a></li>
+        <li><a href="#" onclick="filterCategory('ancient',this)">Ancient Coins <span class="count">(2)</span></a></li>
+        <li><a href="#" onclick="filterCategory('gold',this)">Gold &amp; Silver <span class="count">(2)</span></a></li>
+        <li><a href="#" onclick="filterCategory('set',this)">Mint Sets <span class="count">(1)</span></a></li>
+        <li><a href="#" onclick="filterCategory('mine',this)" style="color:#0064d2;font-weight:700">My Listings</a></li>
       </ul>
     </div>
-
     <div class="sidebar-section">
       <h3>Condition</h3>
       <ul>
@@ -154,7 +124,6 @@
         <li><a href="#">Good (G)</a></li>
       </ul>
     </div>
-
     <div class="sidebar-section">
       <h3>Price Range</h3>
       <ul>
@@ -165,72 +134,41 @@
         <li><a href="#">Over $1,000</a></li>
       </ul>
     </div>
-
-    <div class="sidebar-section">
-      <h3>Country</h3>
-      <ul>
-        <li><a href="#">United States</a></li>
-        <li><a href="#">United Kingdom</a></li>
-        <li><a href="#">Germany</a></li>
-        <li><a href="#">France</a></li>
-        <li><a href="#">China</a></li>
-        <li><a href="#">Roman Empire</a></li>
-        <li><a href="#">Other</a></li>
+    <div class="sidebar-section" id="contact-section">
+      <h3>Contact Seller</h3>
+      <ul style="font-size:12px;line-height:2">
+        <li>📧 <a href="mailto:marvaseater@gmail.com">marvaseater@gmail.com</a></li>
+        <li>📧 <a href="mailto:watsonkris611@gmail.com">watsonkris611@gmail.com</a></li>
+        <li>📱 <a href="tel:8083429975">(808) 342-9975</a></li>
+        <li>💳 PayPal: marvaseater@gmail.com</li>
       </ul>
     </div>
-
   </aside>
 
-  <!-- ── Main Content ──────────────────────── -->
   <main class="main-content">
-
-    <!-- Seller info panel -->
     <div class="seller-panel">
-      <div class="seller-avatar">IW</div>
+      <div class="seller-avatar" style="background:linear-gradient(135deg,#e53238,#0064d2)">∞</div>
       <div class="seller-info">
         <div class="seller-name">infinity_world_coin</div>
-        <div class="seller-meta">
-          <span class="seller-stars">★★★★★</span>
-          <strong>4,812</strong> feedback ratings &nbsp;|&nbsp; Member since 2012
-        </div>
+        <div class="seller-meta"><span class="seller-stars">★★★★★</span> <strong>4,812</strong> feedback &nbsp;|&nbsp; Member since 2012</div>
         <div class="seller-badges">
           <span class="seller-badge badge-toprated">⭐ Top Rated Seller</span>
           <span class="seller-badge badge-verified">✔ Verified</span>
           <span class="seller-badge badge-powerseller">🏆 Power Seller</span>
         </div>
       </div>
-      <a href="https://www.paypal.com/us/webapps/mpp/buyer-protection"
-         target="_blank" rel="noopener"
-         style="margin-left:auto; font-size:13px; color:#003087; font-weight:600;">
-        🛡️ PayPal Buyer Protection
-      </a>
+      <a href="https://www.paypal.com/us/webapps/mpp/buyer-protection" target="_blank" rel="noopener" style="margin-left:auto;font-size:13px;color:#003087;font-weight:600">🛡️ PayPal Buyer Protection</a>
     </div>
 
-    <!-- PayPal trust notice -->
     <div class="paypal-trust">
-      <div class="pp-big-logo">
-        <span class="pp-blue">Pay</span><span class="pp-sky">Pal</span>
-      </div>
-      <p>
-        <strong>Shop with confidence.</strong> All transactions are processed securely through
-        <strong>PayPal</strong>. Your financial information is never shared with the seller.
-        Covered by <strong>PayPal Buyer Protection</strong> on eligible purchases.
-        <a href="https://www.paypal.com/us/webapps/mpp/buyer-protection"
-           target="_blank" rel="noopener">Learn more</a>
-      </p>
+      <div class="pp-big-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></div>
+      <p><strong>Shop with confidence.</strong> All transactions processed securely through PayPal. Covered by <strong>PayPal Buyer Protection</strong>. <a href="https://www.paypal.com/us/webapps/mpp/buyer-protection" target="_blank">Learn more</a></p>
     </div>
 
-    <!-- Featured banner -->
-    <div class="featured-banner">
-      🔥 Featured this week — Free shipping on orders over $75!
-    </div>
+    <div class="featured-banner" style="font-size:13px">🔥 Free shipping on orders over $75! · PayPal: marvaseater@gmail.com · 📱 (808) 342-9975</div>
 
-    <!-- Results / sort bar -->
     <div class="results-bar">
-      <span class="results-count">
-        <strong id="resultCount">48</strong> results for
-        <strong id="resultCategory">All Items</strong>
-      </span>
+      <span class="results-count"><strong id="resultCount">12</strong> results for <strong id="resultCategory">All Items</strong></span>
       <div class="sort-select">
         <label for="sortBy">Sort by:</label>
         <select id="sortBy" onchange="sortItems(this.value)">
@@ -241,647 +179,234 @@
         </select>
       </div>
     </div>
+    <p class="no-results-msg" id="noResults">No coins found matching your search.</p>
 
-    <!-- No-results message -->
-    <p class="no-results-msg" id="noResults">
-      No coins found matching your search. Try different keywords.
-    </p>
-
-    <!-- ── Product Grid ────────────────────── -->
     <div class="product-grid" id="productGrid">
-
-      <!-- ── CARD 1 ── -->
-      <div class="product-card" data-category="us" data-title="1921 Morgan Silver Dollar MS64 NGC Certified" data-price="289">
-        <div class="card-image">
-          <div class="coin-placeholder" style="background: radial-gradient(circle, #c0c0c0 40%, #8a8a8a 100%);">$</div>
-          <span class="badge-corner badge-hot">HOT</span>
-          <button class="watchlist-btn" onclick="toggleWatch(this)" title="Add to watchlist">♡</button>
-        </div>
-        <div class="card-body">
-          <div class="card-condition">Pre-Owned · Graded</div>
-          <div class="card-title"><a href="#">1921 Morgan Silver Dollar MS64 NGC Certified</a></div>
-          <div class="card-price">$289.00 <span class="price-was">$320.00</span><br>
-            <span class="price-save">Save 10%</span></div>
-          <div class="card-shipping"><span class="free-ship">Free shipping</span></div>
-          <div class="card-location">📍 Philadelphia, PA</div>
-        </div>
-        <div class="card-footer">
-          <!-- PayPal hosted Buy Now button -->
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1921 Morgan Silver Dollar MS64 NGC Certified">
-            <input type="hidden" name="amount" value="289.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <input type="hidden" name="return" value="https://infinity-world-coin.example.com/thank-you.html">
-            <input type="hidden" name="cancel_return" value="https://infinity-world-coin.example.com/">
-            <button type="submit" class="btn-buy-now">
-              Buy It Now —
-              <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span>
-            </button>
-          </form>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="add" value="1">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1921 Morgan Silver Dollar MS64 NGC Certified">
-            <input type="hidden" name="amount" value="289.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <button type="submit" class="btn-add-cart">+ Add to Cart</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- ── CARD 2 ── -->
-      <div class="product-card" data-category="gold" data-title="1908 Saint-Gaudens $20 Gold Double Eagle MS63 PCGS" data-price="2450">
-        <div class="card-image">
-          <div class="coin-placeholder" style="background: radial-gradient(circle, #ffd700 40%, #b8860b 100%);">$20</div>
-          <span class="badge-corner">RARE</span>
-          <button class="watchlist-btn" onclick="toggleWatch(this)" title="Add to watchlist">♡</button>
-        </div>
-        <div class="card-body">
-          <div class="card-condition">Pre-Owned · Graded MS63</div>
-          <div class="card-title"><a href="#">1908 Saint-Gaudens $20 Gold Double Eagle MS63 PCGS</a></div>
-          <div class="card-price">$2,450.00</div>
-          <div class="card-shipping"><span class="free-ship">Free insured shipping</span></div>
-          <div class="card-location">📍 New York, NY</div>
-        </div>
-        <div class="card-footer">
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1908 Saint-Gaudens $20 Gold Double Eagle MS63 PCGS">
-            <input type="hidden" name="amount" value="2450.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <input type="hidden" name="return" value="https://infinity-world-coin.example.com/thank-you.html">
-            <input type="hidden" name="cancel_return" value="https://infinity-world-coin.example.com/">
-            <button type="submit" class="btn-buy-now">
-              Buy It Now —
-              <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span>
-            </button>
-          </form>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="add" value="1">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1908 Saint-Gaudens $20 Gold Double Eagle MS63 PCGS">
-            <input type="hidden" name="amount" value="2450.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <button type="submit" class="btn-add-cart">+ Add to Cart</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- ── CARD 3 ── -->
-      <div class="product-card" data-category="world" data-title="1936 German Third Reich Silver 5 Mark Hindenburg" data-price="95">
-        <div class="card-image">
-          <div class="coin-placeholder" style="background: radial-gradient(circle, #b0b0b0 40%, #707070 100%);">5M</div>
-          <span class="badge-corner badge-new">NEW</span>
-          <button class="watchlist-btn" onclick="toggleWatch(this)" title="Add to watchlist">♡</button>
-        </div>
-        <div class="card-body">
-          <div class="card-condition">Pre-Owned · XF+</div>
-          <div class="card-title"><a href="#">1936 German Third Reich Silver 5 Mark Hindenburg</a></div>
-          <div class="card-price">$95.00 <span class="price-was">$115.00</span><br>
-            <span class="price-save">Save 17%</span></div>
-          <div class="card-shipping">$4.99 shipping</div>
-          <div class="card-location">📍 Chicago, IL</div>
-        </div>
-        <div class="card-footer">
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1936 German Third Reich Silver 5 Mark Hindenburg">
-            <input type="hidden" name="amount" value="95.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="4.99">
-            <input type="hidden" name="return" value="https://infinity-world-coin.example.com/thank-you.html">
-            <input type="hidden" name="cancel_return" value="https://infinity-world-coin.example.com/">
-            <button type="submit" class="btn-buy-now">
-              Buy It Now —
-              <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span>
-            </button>
-          </form>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="add" value="1">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1936 German Third Reich Silver 5 Mark Hindenburg">
-            <input type="hidden" name="amount" value="95.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="4.99">
-            <button type="submit" class="btn-add-cart">+ Add to Cart</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- ── CARD 4 ── -->
-      <div class="product-card" data-category="ancient" data-title="Ancient Roman Silver Denarius Julius Caesar Portrait 44 BC" data-price="375">
-        <div class="card-image">
-          <div class="coin-placeholder" style="background: radial-gradient(circle, #cd853f 40%, #8b5a2b 100%);">SPQR</div>
-          <span class="badge-corner">RARE</span>
-          <button class="watchlist-btn" onclick="toggleWatch(this)" title="Add to watchlist">♡</button>
-        </div>
-        <div class="card-body">
-          <div class="card-condition">Ancient · Fine</div>
-          <div class="card-title"><a href="#">Ancient Roman Silver Denarius Julius Caesar Portrait 44 BC</a></div>
-          <div class="card-price">$375.00</div>
-          <div class="card-shipping"><span class="free-ship">Free shipping</span></div>
-          <div class="card-location">📍 Austin, TX</div>
-        </div>
-        <div class="card-footer">
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="Ancient Roman Silver Denarius Julius Caesar Portrait 44 BC">
-            <input type="hidden" name="amount" value="375.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <input type="hidden" name="return" value="https://infinity-world-coin.example.com/thank-you.html">
-            <input type="hidden" name="cancel_return" value="https://infinity-world-coin.example.com/">
-            <button type="submit" class="btn-buy-now">
-              Buy It Now —
-              <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span>
-            </button>
-          </form>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="add" value="1">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="Ancient Roman Silver Denarius Julius Caesar Portrait 44 BC">
-            <input type="hidden" name="amount" value="375.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <button type="submit" class="btn-add-cart">+ Add to Cart</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- ── CARD 5 ── -->
-      <div class="product-card" data-category="us" data-title="1955 Lincoln Wheat Cent Doubled Die Obverse (Error Coin)" data-price="1495">
-        <div class="card-image">
-          <div class="coin-placeholder" style="background: radial-gradient(circle, #b87333 40%, #7a4d24 100%);">1¢</div>
-          <span class="badge-corner badge-hot">ERROR</span>
-          <button class="watchlist-btn" onclick="toggleWatch(this)" title="Add to watchlist">♡</button>
-        </div>
-        <div class="card-body">
-          <div class="card-condition">Pre-Owned · VF30 ANACS</div>
-          <div class="card-title"><a href="#">1955 Lincoln Wheat Cent Doubled Die Obverse (Error Coin)</a></div>
-          <div class="card-price">$1,495.00</div>
-          <div class="card-shipping"><span class="free-ship">Free insured shipping</span></div>
-          <div class="card-location">📍 Denver, CO</div>
-        </div>
-        <div class="card-footer">
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1955 Lincoln Wheat Cent Doubled Die Obverse (Error Coin)">
-            <input type="hidden" name="amount" value="1495.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <input type="hidden" name="return" value="https://infinity-world-coin.example.com/thank-you.html">
-            <input type="hidden" name="cancel_return" value="https://infinity-world-coin.example.com/">
-            <button type="submit" class="btn-buy-now">
-              Buy It Now —
-              <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span>
-            </button>
-          </form>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="add" value="1">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1955 Lincoln Wheat Cent Doubled Die Obverse (Error Coin)">
-            <input type="hidden" name="amount" value="1495.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <button type="submit" class="btn-add-cart">+ Add to Cart</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- ── CARD 6 ── -->
-      <div class="product-card" data-category="world" data-title="1965 Churchill Crown Great Britain Silver Proof" data-price="28">
-        <div class="card-image">
-          <div class="coin-placeholder" style="background: radial-gradient(circle, #d0d0d0 40%, #909090 100%);">UK</div>
-          <button class="watchlist-btn" onclick="toggleWatch(this)" title="Add to watchlist">♡</button>
-        </div>
-        <div class="card-body">
-          <div class="card-condition">Proof · Uncirculated</div>
-          <div class="card-title"><a href="#">1965 Churchill Crown Great Britain Silver Proof</a></div>
-          <div class="card-price">$28.00</div>
-          <div class="card-shipping">$3.99 shipping</div>
-          <div class="card-location">📍 Seattle, WA</div>
-        </div>
-        <div class="card-footer">
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1965 Churchill Crown Great Britain Silver Proof">
-            <input type="hidden" name="amount" value="28.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="3.99">
-            <input type="hidden" name="return" value="https://infinity-world-coin.example.com/thank-you.html">
-            <input type="hidden" name="cancel_return" value="https://infinity-world-coin.example.com/">
-            <button type="submit" class="btn-buy-now">
-              Buy It Now —
-              <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span>
-            </button>
-          </form>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="add" value="1">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1965 Churchill Crown Great Britain Silver Proof">
-            <input type="hidden" name="amount" value="28.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="3.99">
-            <button type="submit" class="btn-add-cart">+ Add to Cart</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- ── CARD 7 ── -->
-      <div class="product-card" data-category="set" data-title="2023 US Mint Silver Proof Set 10 Coins OGP COA" data-price="89">
-        <div class="card-image">
-          <div class="coin-placeholder" style="background: radial-gradient(circle, #aac4e0 40%, #4a7fa8 100%);">SET</div>
-          <span class="badge-corner badge-new">2023</span>
-          <button class="watchlist-btn" onclick="toggleWatch(this)" title="Add to watchlist">♡</button>
-        </div>
-        <div class="card-body">
-          <div class="card-condition">New · Sealed OGP</div>
-          <div class="card-title"><a href="#">2023 US Mint Silver Proof Set 10 Coins OGP COA</a></div>
-          <div class="card-price">$89.00</div>
-          <div class="card-shipping"><span class="free-ship">Free shipping</span></div>
-          <div class="card-location">📍 San Francisco, CA</div>
-        </div>
-        <div class="card-footer">
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="2023 US Mint Silver Proof Set 10 Coins OGP COA">
-            <input type="hidden" name="amount" value="89.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <input type="hidden" name="return" value="https://infinity-world-coin.example.com/thank-you.html">
-            <input type="hidden" name="cancel_return" value="https://infinity-world-coin.example.com/">
-            <button type="submit" class="btn-buy-now">
-              Buy It Now —
-              <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span>
-            </button>
-          </form>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="add" value="1">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="2023 US Mint Silver Proof Set 10 Coins OGP COA">
-            <input type="hidden" name="amount" value="89.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <button type="submit" class="btn-add-cart">+ Add to Cart</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- ── CARD 8 ── -->
-      <div class="product-card" data-category="gold" data-title="1 oz American Gold Eagle MS70 PCGS 2022" data-price="2185">
-        <div class="card-image">
-          <div class="coin-placeholder" style="background: radial-gradient(circle, #ffd700 40%, #c8960c 100%);">AGE</div>
-          <span class="badge-corner badge-hot">HOT</span>
-          <button class="watchlist-btn" onclick="toggleWatch(this)" title="Add to watchlist">♡</button>
-        </div>
-        <div class="card-body">
-          <div class="card-condition">New · MS70 PCGS</div>
-          <div class="card-title"><a href="#">1 oz American Gold Eagle MS70 PCGS 2022</a></div>
-          <div class="card-price">$2,185.00</div>
-          <div class="card-shipping"><span class="free-ship">Free insured shipping</span></div>
-          <div class="card-location">📍 Las Vegas, NV</div>
-        </div>
-        <div class="card-footer">
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1 oz American Gold Eagle MS70 PCGS 2022">
-            <input type="hidden" name="amount" value="2185.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <input type="hidden" name="return" value="https://infinity-world-coin.example.com/thank-you.html">
-            <input type="hidden" name="cancel_return" value="https://infinity-world-coin.example.com/">
-            <button type="submit" class="btn-buy-now">
-              Buy It Now —
-              <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span>
-            </button>
-          </form>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="add" value="1">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1 oz American Gold Eagle MS70 PCGS 2022">
-            <input type="hidden" name="amount" value="2185.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <button type="submit" class="btn-add-cart">+ Add to Cart</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- ── CARD 9 ── -->
-      <div class="product-card" data-category="us" data-title="1916-D Mercury Dime Fine 12 Key Date" data-price="740">
-        <div class="card-image">
-          <div class="coin-placeholder" style="background: radial-gradient(circle, #d0cfc8 40%, #888070 100%);">10¢</div>
-          <span class="badge-corner">KEY</span>
-          <button class="watchlist-btn" onclick="toggleWatch(this)" title="Add to watchlist">♡</button>
-        </div>
-        <div class="card-body">
-          <div class="card-condition">Pre-Owned · Fine 12</div>
-          <div class="card-title"><a href="#">1916-D Mercury Dime Fine 12 Key Date</a></div>
-          <div class="card-price">$740.00</div>
-          <div class="card-shipping"><span class="free-ship">Free shipping</span></div>
-          <div class="card-location">📍 Boston, MA</div>
-        </div>
-        <div class="card-footer">
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1916-D Mercury Dime Fine 12 Key Date">
-            <input type="hidden" name="amount" value="740.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <input type="hidden" name="return" value="https://infinity-world-coin.example.com/thank-you.html">
-            <input type="hidden" name="cancel_return" value="https://infinity-world-coin.example.com/">
-            <button type="submit" class="btn-buy-now">
-              Buy It Now —
-              <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span>
-            </button>
-          </form>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="add" value="1">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1916-D Mercury Dime Fine 12 Key Date">
-            <input type="hidden" name="amount" value="740.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <button type="submit" class="btn-add-cart">+ Add to Cart</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- ── CARD 10 ── -->
-      <div class="product-card" data-category="world" data-title="1893 Mexico 8 Reales Silver Coin Pillar Dollar EF" data-price="165">
-        <div class="card-image">
-          <div class="coin-placeholder" style="background: radial-gradient(circle, #c0a882 40%, #806040 100%);">8R</div>
-          <button class="watchlist-btn" onclick="toggleWatch(this)" title="Add to watchlist">♡</button>
-        </div>
-        <div class="card-body">
-          <div class="card-condition">Pre-Owned · EF40</div>
-          <div class="card-title"><a href="#">1893 Mexico 8 Reales Silver Coin Pillar Dollar EF</a></div>
-          <div class="card-price">$165.00 <span class="price-was">$195.00</span><br>
-            <span class="price-save">Save 15%</span></div>
-          <div class="card-shipping">$5.99 shipping</div>
-          <div class="card-location">📍 Miami, FL</div>
-        </div>
-        <div class="card-footer">
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1893 Mexico 8 Reales Silver Coin Pillar Dollar EF">
-            <input type="hidden" name="amount" value="165.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="5.99">
-            <input type="hidden" name="return" value="https://infinity-world-coin.example.com/thank-you.html">
-            <input type="hidden" name="cancel_return" value="https://infinity-world-coin.example.com/">
-            <button type="submit" class="btn-buy-now">
-              Buy It Now —
-              <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span>
-            </button>
-          </form>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="add" value="1">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1893 Mexico 8 Reales Silver Coin Pillar Dollar EF">
-            <input type="hidden" name="amount" value="165.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="5.99">
-            <button type="submit" class="btn-add-cart">+ Add to Cart</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- ── CARD 11 ── -->
-      <div class="product-card" data-category="ancient" data-title="Greek Silver Tetradrachm Athens Owl 440-404 BC" data-price="895">
-        <div class="card-image">
-          <div class="coin-placeholder" style="background: radial-gradient(circle, #b8b090 40%, #786840 100%);">OWL</div>
-          <span class="badge-corner">RARE</span>
-          <button class="watchlist-btn" onclick="toggleWatch(this)" title="Add to watchlist">♡</button>
-        </div>
-        <div class="card-body">
-          <div class="card-condition">Ancient · VF</div>
-          <div class="card-title"><a href="#">Greek Silver Tetradrachm Athens Owl 440-404 BC</a></div>
-          <div class="card-price">$895.00</div>
-          <div class="card-shipping"><span class="free-ship">Free shipping</span></div>
-          <div class="card-location">📍 Portland, OR</div>
-        </div>
-        <div class="card-footer">
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="Greek Silver Tetradrachm Athens Owl 440-404 BC">
-            <input type="hidden" name="amount" value="895.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <input type="hidden" name="return" value="https://infinity-world-coin.example.com/thank-you.html">
-            <input type="hidden" name="cancel_return" value="https://infinity-world-coin.example.com/">
-            <button type="submit" class="btn-buy-now">
-              Buy It Now —
-              <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span>
-            </button>
-          </form>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="add" value="1">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="Greek Silver Tetradrachm Athens Owl 440-404 BC">
-            <input type="hidden" name="amount" value="895.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <button type="submit" class="btn-add-cart">+ Add to Cart</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- ── CARD 12 ── -->
-      <div class="product-card" data-category="us" data-title="1909-S VDB Lincoln Cent PCGS VG10 Key Date" data-price="880">
-        <div class="card-image">
-          <div class="coin-placeholder" style="background: radial-gradient(circle, #b87333 40%, #7a4d24 100%);">VDB</div>
-          <span class="badge-corner">KEY</span>
-          <button class="watchlist-btn" onclick="toggleWatch(this)" title="Add to watchlist">♡</button>
-        </div>
-        <div class="card-body">
-          <div class="card-condition">Pre-Owned · VG10 PCGS</div>
-          <div class="card-title"><a href="#">1909-S VDB Lincoln Cent PCGS VG10 Key Date</a></div>
-          <div class="card-price">$880.00</div>
-          <div class="card-shipping"><span class="free-ship">Free shipping</span></div>
-          <div class="card-location">📍 Phoenix, AZ</div>
-        </div>
-        <div class="card-footer">
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_xclick">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1909-S VDB Lincoln Cent PCGS VG10 Key Date">
-            <input type="hidden" name="amount" value="880.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <input type="hidden" name="return" value="https://infinity-world-coin.example.com/thank-you.html">
-            <input type="hidden" name="cancel_return" value="https://infinity-world-coin.example.com/">
-            <button type="submit" class="btn-buy-now">
-              Buy It Now —
-              <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span>
-            </button>
-          </form>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="add" value="1">
-            <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@example.com">
-            <input type="hidden" name="item_name" value="1909-S VDB Lincoln Cent PCGS VG10 Key Date">
-            <input type="hidden" name="amount" value="880.00">
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="hidden" name="shipping" value="0">
-            <button type="submit" class="btn-add-cart">+ Add to Cart</button>
-          </form>
-        </div>
-      </div>
-
-    </div><!-- /product-grid -->
-
-    <!-- Pagination -->
-    <div class="pagination" id="pagination">
-      <span class="active">1</span>
-      <a href="#">2</a>
-      <a href="#">3</a>
-      <a href="#">4</a>
-      <a href="#">›</a>
+      <div class="product-card" data-category="us" data-title="1921 Morgan Silver Dollar MS64 NGC" data-price="289"><div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#c0c0c0 40%,#8a8a8a 100%)">$</div><span class="badge-corner badge-hot">HOT</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div><div class="card-body"><div class="card-condition">Pre-Owned · Graded</div><div class="card-title"><a href="#">1921 Morgan Silver Dollar MS64 NGC</a></div><div class="card-price">$289.00 <span class="price-was">$320.00</span><br><span class="price-save">Save 10%</span></div><div class="card-shipping"><span class="free-ship">Free shipping</span></div><div class="card-location">📍 Philadelphia, PA</div></div><div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1921 Morgan Silver Dollar MS64 NGC"><input type="hidden" name="amount" value="289.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_cart"><input type="hidden" name="add" value="1"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1921 Morgan Silver Dollar MS64 NGC"><input type="hidden" name="amount" value="289.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-add-cart">+ Add to Cart</button></form></div></div>
+      <div class="product-card" data-category="gold" data-title="1908 Saint-Gaudens $20 Gold Double Eagle MS63 PCGS" data-price="2450"><div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#ffd700 40%,#b8860b 100%)">$20</div><span class="badge-corner">RARE</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div><div class="card-body"><div class="card-condition">Pre-Owned · MS63</div><div class="card-title"><a href="#">1908 Saint-Gaudens $20 Gold Double Eagle MS63 PCGS</a></div><div class="card-price">$2,450.00</div><div class="card-shipping"><span class="free-ship">Free insured shipping</span></div><div class="card-location">📍 New York, NY</div></div><div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1908 Saint-Gaudens $20 Gold Double Eagle MS63 PCGS"><input type="hidden" name="amount" value="2450.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_cart"><input type="hidden" name="add" value="1"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1908 Saint-Gaudens $20 Gold Double Eagle MS63 PCGS"><input type="hidden" name="amount" value="2450.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-add-cart">+ Add to Cart</button></form></div></div>
+      <div class="product-card" data-category="world" data-title="1936 German Silver 5 Mark Hindenburg" data-price="95"><div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#b0b0b0 40%,#707070 100%)">5M</div><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div><div class="card-body"><div class="card-condition">Pre-Owned · XF+</div><div class="card-title"><a href="#">1936 German Silver 5 Mark Hindenburg</a></div><div class="card-price">$95.00 <span class="price-was">$115.00</span><br><span class="price-save">Save 17%</span></div><div class="card-shipping">$4.99 shipping</div><div class="card-location">📍 Chicago, IL</div></div><div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1936 German Silver 5 Mark Hindenburg"><input type="hidden" name="amount" value="95.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="4.99"><button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_cart"><input type="hidden" name="add" value="1"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1936 German Silver 5 Mark Hindenburg"><input type="hidden" name="amount" value="95.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="4.99"><button type="submit" class="btn-add-cart">+ Add to Cart</button></form></div></div>
+      <div class="product-card" data-category="ancient" data-title="Roman Silver Denarius Julius Caesar 44 BC" data-price="375"><div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#cd853f 40%,#8b5a2b 100%)">SPQR</div><span class="badge-corner">RARE</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div><div class="card-body"><div class="card-condition">Ancient · Fine</div><div class="card-title"><a href="#">Roman Silver Denarius Julius Caesar 44 BC</a></div><div class="card-price">$375.00</div><div class="card-shipping"><span class="free-ship">Free shipping</span></div><div class="card-location">📍 Austin, TX</div></div><div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="Roman Silver Denarius Julius Caesar 44 BC"><input type="hidden" name="amount" value="375.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_cart"><input type="hidden" name="add" value="1"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="Roman Silver Denarius Julius Caesar 44 BC"><input type="hidden" name="amount" value="375.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-add-cart">+ Add to Cart</button></form></div></div>
+      <div class="product-card" data-category="us" data-title="1955 Lincoln Wheat Cent Doubled Die Error" data-price="1495"><div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#b87333 40%,#7a4d24 100%)">1¢</div><span class="badge-corner badge-hot">ERROR</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div><div class="card-body"><div class="card-condition">Pre-Owned · VF30</div><div class="card-title"><a href="#">1955 Lincoln Wheat Cent Doubled Die Error</a></div><div class="card-price">$1,495.00</div><div class="card-shipping"><span class="free-ship">Free insured shipping</span></div><div class="card-location">📍 Denver, CO</div></div><div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1955 Lincoln Wheat Cent Doubled Die Error"><input type="hidden" name="amount" value="1495.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_cart"><input type="hidden" name="add" value="1"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1955 Lincoln Wheat Cent Doubled Die Error"><input type="hidden" name="amount" value="1495.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-add-cart">+ Add to Cart</button></form></div></div>
+      <div class="product-card" data-category="set" data-title="2023 US Mint Silver Proof Set OGP COA" data-price="89"><div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#aac4e0 40%,#4a7fa8 100%)">SET</div><span class="badge-corner badge-new">2023</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div><div class="card-body"><div class="card-condition">New · Sealed OGP</div><div class="card-title"><a href="#">2023 US Mint Silver Proof Set OGP COA</a></div><div class="card-price">$89.00</div><div class="card-shipping"><span class="free-ship">Free shipping</span></div><div class="card-location">📍 San Francisco, CA</div></div><div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="2023 US Mint Silver Proof Set OGP COA"><input type="hidden" name="amount" value="89.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_cart"><input type="hidden" name="add" value="1"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="2023 US Mint Silver Proof Set OGP COA"><input type="hidden" name="amount" value="89.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-add-cart">+ Add to Cart</button></form></div></div>
+      <div class="product-card" data-category="gold" data-title="1 oz American Gold Eagle MS70 PCGS 2022" data-price="2185"><div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#ffd700 40%,#c8960c 100%)">AGE</div><span class="badge-corner badge-hot">HOT</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div><div class="card-body"><div class="card-condition">New · MS70 PCGS</div><div class="card-title"><a href="#">1 oz American Gold Eagle MS70 PCGS 2022</a></div><div class="card-price">$2,185.00</div><div class="card-shipping"><span class="free-ship">Free insured shipping</span></div><div class="card-location">📍 Las Vegas, NV</div></div><div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1 oz American Gold Eagle MS70 PCGS 2022"><input type="hidden" name="amount" value="2185.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_cart"><input type="hidden" name="add" value="1"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1 oz American Gold Eagle MS70 PCGS 2022"><input type="hidden" name="amount" value="2185.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-add-cart">+ Add to Cart</button></form></div></div>
+      <div class="product-card" data-category="us" data-title="1916-D Mercury Dime Fine 12 Key Date" data-price="740"><div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#d0cfc8 40%,#888070 100%)">10¢</div><span class="badge-corner">KEY</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div><div class="card-body"><div class="card-condition">Pre-Owned · Fine 12</div><div class="card-title"><a href="#">1916-D Mercury Dime Fine 12 Key Date</a></div><div class="card-price">$740.00</div><div class="card-shipping"><span class="free-ship">Free shipping</span></div><div class="card-location">📍 Boston, MA</div></div><div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1916-D Mercury Dime Fine 12 Key Date"><input type="hidden" name="amount" value="740.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_cart"><input type="hidden" name="add" value="1"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1916-D Mercury Dime Fine 12 Key Date"><input type="hidden" name="amount" value="740.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-add-cart">+ Add to Cart</button></form></div></div>
+      <div class="product-card" data-category="ancient" data-title="Greek Silver Tetradrachm Athens Owl 440-404 BC" data-price="895"><div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#b8b090 40%,#786840 100%)">OWL</div><span class="badge-corner">RARE</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div><div class="card-body"><div class="card-condition">Ancient · VF</div><div class="card-title"><a href="#">Greek Silver Tetradrachm Athens Owl 440-404 BC</a></div><div class="card-price">$895.00</div><div class="card-shipping"><span class="free-ship">Free shipping</span></div><div class="card-location">📍 Portland, OR</div></div><div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="Greek Silver Tetradrachm Athens Owl 440-404 BC"><input type="hidden" name="amount" value="895.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_cart"><input type="hidden" name="add" value="1"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="Greek Silver Tetradrachm Athens Owl 440-404 BC"><input type="hidden" name="amount" value="895.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-add-cart">+ Add to Cart</button></form></div></div>
+      <div class="product-card" data-category="us" data-title="1909-S VDB Lincoln Cent PCGS VG10 Key Date" data-price="880"><div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#b87333 40%,#7a4d24 100%)">VDB</div><span class="badge-corner">KEY</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div><div class="card-body"><div class="card-condition">Pre-Owned · VG10 PCGS</div><div class="card-title"><a href="#">1909-S VDB Lincoln Cent PCGS VG10 Key Date</a></div><div class="card-price">$880.00</div><div class="card-shipping"><span class="free-ship">Free shipping</span></div><div class="card-location">📍 Phoenix, AZ</div></div><div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1909-S VDB Lincoln Cent PCGS VG10 Key Date"><input type="hidden" name="amount" value="880.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_cart"><input type="hidden" name="add" value="1"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1909-S VDB Lincoln Cent PCGS VG10 Key Date"><input type="hidden" name="amount" value="880.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="0"><button type="submit" class="btn-add-cart">+ Add to Cart</button></form></div></div>
+      <div class="product-card" data-category="world" data-title="1893 Mexico 8 Reales Silver Pillar Dollar EF" data-price="165"><div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#c0a882 40%,#806040 100%)">8R</div><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div><div class="card-body"><div class="card-condition">Pre-Owned · EF40</div><div class="card-title"><a href="#">1893 Mexico 8 Reales Silver Pillar Dollar EF</a></div><div class="card-price">$165.00 <span class="price-was">$195.00</span><br><span class="price-save">Save 15%</span></div><div class="card-shipping">$5.99 shipping</div><div class="card-location">📍 Miami, FL</div></div><div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1893 Mexico 8 Reales Silver Pillar Dollar EF"><input type="hidden" name="amount" value="165.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="5.99"><button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_cart"><input type="hidden" name="add" value="1"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1893 Mexico 8 Reales Silver Pillar Dollar EF"><input type="hidden" name="amount" value="165.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="5.99"><button type="submit" class="btn-add-cart">+ Add to Cart</button></form></div></div>
+      <div class="product-card" data-category="world" data-title="1965 Churchill Crown Great Britain Silver Proof" data-price="28"><div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#d0d0d0 40%,#909090 100%)">UK</div><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div><div class="card-body"><div class="card-condition">Proof · Uncirculated</div><div class="card-title"><a href="#">1965 Churchill Crown Great Britain Silver Proof</a></div><div class="card-price">$28.00</div><div class="card-shipping">$3.99 shipping</div><div class="card-location">📍 Seattle, WA</div></div><div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1965 Churchill Crown Great Britain Silver Proof"><input type="hidden" name="amount" value="28.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="3.99"><button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_cart"><input type="hidden" name="add" value="1"><input type="hidden" name="business" value="marvaseater@gmail.com"><input type="hidden" name="item_name" value="1965 Churchill Crown Great Britain Silver Proof"><input type="hidden" name="amount" value="28.00"><input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="3.99"><button type="submit" class="btn-add-cart">+ Add to Cart</button></form></div></div>
+      <div id="user-listings-anchor"></div>
     </div>
-
+    <div class="pagination" id="pagination"><span class="active">1</span><a href="#">2</a><a href="#">3</a><a href="#">›</a></div>
   </main>
-</div><!-- /page-container -->
-
-<!-- ══════════════════════════════════════════════
-     FOOTER
-══════════════════════════════════════════════ -->
-<footer class="site-footer">
-  <div class="footer-links">
-    <a href="#">About Infinity World Coin</a>
-    <a href="#">Feedback</a>
-    <a href="#">Returns Policy</a>
-    <a href="#">Shipping Policy</a>
-    <a href="#">Contact Seller</a>
-    <a href="https://www.paypal.com/us/webapps/mpp/buyer-protection" target="_blank" rel="noopener">PayPal Buyer Protection</a>
-    <a href="https://www.paypal.com/us/webapps/mpp/paypal-safety-and-security" target="_blank" rel="noopener">Security &amp; Privacy</a>
-    <a href="#">Coin Grading Guide</a>
-    <a href="#">Accessibility</a>
-  </div>
-  <div class="footer-bottom">
-    Copyright © 2024 Infinity World Coin. All rights reserved. &nbsp;|&nbsp;
-    Payments securely processed by
-    <span class="pp-inline">
-      <span class="pp-blue">Pay</span><span class="pp-sky">Pal</span>
-    </span>
-    &nbsp;|&nbsp; All prices in USD.
-  </div>
-</footer>
-
-<!-- ══════════════════════════════════════════════
-     JAVASCRIPT – search, filter, watchlist
-══════════════════════════════════════════════ -->
+</div>
 <script>
-  // ── Search ─────────────────────────────────────
-  function searchItems(e) {
-    e.preventDefault();
-    const query = document.getElementById('searchInput').value.trim().toLowerCase();
-    const cards = document.querySelectorAll('#productGrid .product-card');
-    let visible = 0;
+var PAYPAL='marvaseater@gmail.com';
+var REPO='pewpi-infinity/Infinity-World-Coin';
+var LISTINGS_FILE='listings.json';
+var ghUser=localStorage.getItem('iwc_gh_user')||'';
+var ghToken=localStorage.getItem('iwc_gh_token')||'';
 
-    cards.forEach(card => {
-      const title = card.dataset.title.toLowerCase();
-      if (!query || title.includes(query)) {
-        card.classList.remove('hidden');
-        visible++;
+// ── INIT ──────────────────────────────────────────
+(function(){
+  if(ghUser){
+    document.getElementById('greeting-text').innerHTML='Hi, <strong>'+ghUser+'</strong>! <a href="#" onclick="signOut();return false" style="color:#e53238">Sign out</a>';
+    document.getElementById('account-link').textContent='@'+ghUser;
+  }
+  loadListings();
+})();
+
+// ── GITHUB SIGN IN ────────────────────────────────
+function openGHModal(){document.getElementById('gh-modal').classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function doGHLogin(){
+  var u=document.getElementById('gh-user-input').value.trim();
+  var t=document.getElementById('gh-token-input').value.trim();
+  if(!u||!t){alert('Please enter both username and token.');return;}
+  ghUser=u; ghToken=t;
+  localStorage.setItem('iwc_gh_user',u);
+  localStorage.setItem('iwc_gh_token',t);
+  document.getElementById('greeting-text').innerHTML='Hi, <strong>'+u+'</strong>! <a href="#" onclick="signOut();return false" style="color:#e53238">Sign out</a>';
+  document.getElementById('account-link').textContent='@'+u;
+  closeModal('gh-modal');
+  loadListings();
+}
+function signOut(){
+  ghUser=''; ghToken='';
+  localStorage.removeItem('iwc_gh_user');
+  localStorage.removeItem('iwc_gh_token');
+  document.getElementById('greeting-text').innerHTML='Hi! <a href="#" onclick="openGHModal();return false">Sign in with GitHub</a>';
+  document.getElementById('account-link').textContent='My Account';
+  renderListings(JSON.parse(localStorage.getItem('iwc_listings')||'[]'));
+}
+
+// ── LISTINGS PERSISTENCE ──────────────────────────
+function loadListings(){
+  // Try GitHub first, fall back to localStorage
+  if(ghUser&&ghToken){
+    fetch('https://api.github.com/repos/'+REPO+'/contents/'+LISTINGS_FILE,{
+      headers:{'Authorization':'token '+ghToken,'Accept':'application/vnd.github.v3+json'}
+    }).then(function(r){return r.ok?r.json():null})
+    .then(function(d){
+      if(d&&d.content){
+        try{
+          var listings=JSON.parse(atob(d.content.replace(/\n/g,'')));
+          localStorage.setItem('iwc_listings',JSON.stringify(listings));
+          renderListings(listings);
+        }catch(e){renderListings(JSON.parse(localStorage.getItem('iwc_listings')||'[]'));}
       } else {
-        card.classList.add('hidden');
+        renderListings(JSON.parse(localStorage.getItem('iwc_listings')||'[]'));
       }
+    }).catch(function(){
+      renderListings(JSON.parse(localStorage.getItem('iwc_listings')||'[]'));
     });
-
-    document.getElementById('resultCount').textContent = visible;
-    document.getElementById('resultCategory').textContent = query ? `"${query}"` : 'All Items';
-    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
-    document.getElementById('pagination').style.display = visible === 0 ? 'none' : 'flex';
-    return false;
+  } else {
+    renderListings(JSON.parse(localStorage.getItem('iwc_listings')||'[]'));
   }
+}
 
-  // ── Category filter ─────────────────────────────
-  function filterCategory(cat, link) {
-    // Update active nav links
-    document.querySelectorAll('.category-nav a, .sidebar a').forEach(a => a.classList.remove('active'));
-    document.querySelectorAll(`.category-nav a[onclick*="'${cat}'"], .sidebar a[onclick*="'${cat}'"]`)
-      .forEach(a => a.classList.add('active'));
-
-    const cards = document.querySelectorAll('#productGrid .product-card');
-    let visible = 0;
-
-    cards.forEach(card => {
-      if (cat === 'all' || card.dataset.category === cat) {
-        card.classList.remove('hidden');
-        visible++;
-      } else {
-        card.classList.add('hidden');
-      }
+function saveListings(listings){
+  localStorage.setItem('iwc_listings',JSON.stringify(listings));
+  renderListings(listings);
+  if(!ghUser||!ghToken) return;
+  var content=btoa(unescape(encodeURIComponent(JSON.stringify(listings,null,2))));
+  // Get SHA for update
+  fetch('https://api.github.com/repos/'+REPO+'/contents/'+LISTINGS_FILE,{
+    headers:{'Authorization':'token '+ghToken,'Accept':'application/vnd.github.v3+json'}
+  }).then(function(r){return r.ok?r.json():{}})
+  .then(function(existing){
+    var body={message:'listing update by '+ghUser+' '+new Date().toISOString(),content:content};
+    if(existing&&existing.sha)body.sha=existing.sha;
+    return fetch('https://api.github.com/repos/'+REPO+'/contents/'+LISTINGS_FILE,{
+      method:'PUT',
+      headers:{'Authorization':'token '+ghToken,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+      body:JSON.stringify(body)
     });
+  }).then(function(r){
+    if(r&&r.ok)console.log('Listings synced to GitHub');
+  }).catch(function(e){console.warn('GitHub sync failed:',e);});
+}
 
-    const labels = {
-      all: 'All Items', us: 'US Coins', world: 'World Coins',
-      ancient: 'Ancient Coins', gold: 'Gold & Silver',
-      set: 'Mint Sets', error: 'Error Coins', note: 'Paper Money'
-    };
+function renderListings(listings){
+  // Remove old injected cards
+  document.querySelectorAll('.user-listing-card').forEach(function(el){el.remove()});
+  var anchor=document.getElementById('user-listings-anchor');
+  listings.forEach(function(l){
+    var card=document.createElement('div');
+    card.className='product-card user-listing-card';
+    card.dataset.category=l.cat||'us';
+    card.dataset.title=l.title||'';
+    card.dataset.price=l.price||'0';
+    card.dataset.mine='true';
+    var shipText=parseFloat(l.ship||0)===0?'<span class="free-ship">Free shipping</span>':'$'+parseFloat(l.ship).toFixed(2)+' shipping';
+    var deleteBtn=ghUser?'<button onclick="deleteListing(\''+l.id+'\')" style="margin-top:4px;padding:3px 10px;background:#fee;border:1px solid #e53238;color:#e53238;border-radius:4px;font-size:11px;cursor:pointer">🗑 Remove</button>':'';
+    card.innerHTML='<div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#ffd700 40%,#b8860b 100%);font-size:11px;padding:4px">∞</div><span class="badge-corner badge-new">NEW</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div>'
+      +'<div class="card-body"><div class="card-condition">'+(l.cond||'Listed')+'</div>'
+      +'<div class="card-title"><a href="#">'+l.title+'</a></div>'
+      +'<div class="card-price">$'+parseFloat(l.price).toLocaleString('en-US',{minimumFractionDigits:2})+'</div>'
+      +'<div class="card-shipping">'+shipText+'</div>'
+      +(l.loc?'<div class="card-location">📍 '+l.loc+'</div>':'')
+      +(l.desc?'<div style="font-size:11px;color:#555;margin-top:4px">'+l.desc+'</div>':'')
+      +deleteBtn+'</div>'
+      +'<div class="card-footer">'
+      +'<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">'
+      +'<input type="hidden" name="cmd" value="_xclick">'
+      +'<input type="hidden" name="business" value="'+PAYPAL+'">'
+      +'<input type="hidden" name="item_name" value="'+l.title+'">'
+      +'<input type="hidden" name="amount" value="'+parseFloat(l.price).toFixed(2)+'">'
+      +'<input type="hidden" name="currency_code" value="USD">'
+      +'<input type="hidden" name="shipping" value="'+parseFloat(l.ship||0).toFixed(2)+'">'
+      +'<button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button>'
+      +'</form></div>';
+    anchor.parentNode.insertBefore(card,anchor);
+  });
+  // Update count
+  var total=document.querySelectorAll('#productGrid .product-card:not(.hidden)').length;
+  document.getElementById('resultCount').textContent=total;
+}
 
-    document.getElementById('resultCount').textContent = visible;
-    document.getElementById('resultCategory').textContent = labels[cat] || cat;
-    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
-    document.getElementById('pagination').style.display = visible === 0 ? 'none' : 'flex';
+// ── ADD LISTING ───────────────────────────────────
+function openListingModal(){
+  if(!ghUser){openGHModal();return;}
+  document.getElementById('listing-modal').classList.add('open');
+}
+function submitListing(){
+  var title=document.getElementById('l-title').value.trim();
+  var price=document.getElementById('l-price').value;
+  if(!title||!price){alert('Title and price are required.');return;}
+  var listing={
+    id:Date.now().toString(36),
+    title:title,
+    cat:document.getElementById('l-cat').value,
+    price:parseFloat(price).toFixed(2),
+    ship:parseFloat(document.getElementById('l-ship').value||0).toFixed(2),
+    cond:document.getElementById('l-cond').value.trim(),
+    desc:document.getElementById('l-desc').value.trim(),
+    loc:document.getElementById('l-loc').value.trim(),
+    seller:ghUser,
+    date:new Date().toISOString()
+  };
+  var listings=JSON.parse(localStorage.getItem('iwc_listings')||'[]');
+  listings.unshift(listing);
+  saveListings(listings);
+  closeModal('listing-modal');
+  // Clear form
+  ['l-title','l-price','l-ship','l-cond','l-desc','l-loc'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('l-ship').value='0';
+  alert('✓ Listing posted! It will appear at the top of the grid.');
+}
+function deleteListing(id){
+  if(!confirm('Remove this listing?'))return;
+  var listings=JSON.parse(localStorage.getItem('iwc_listings')||'[]');
+  listings=listings.filter(function(l){return l.id!==id;});
+  saveListings(listings);
+}
 
-    // Clear search input when filtering by category
-    document.getElementById('searchInput').value = '';
-    return false;
-  }
-
-  // ── Sort ────────────────────────────────────────
-  function sortItems(value) {
-    const grid = document.getElementById('productGrid');
-    const cards = Array.from(grid.querySelectorAll('.product-card'));
-
-    cards.sort((a, b) => {
-      const pa = parseFloat(a.dataset.price);
-      const pb = parseFloat(b.dataset.price);
-      if (value === 'price_asc')  return pa - pb;
-      if (value === 'price_desc') return pb - pa;
-      if (value === 'newest')     return Math.random() - 0.5; // TODO: replace with actual listing-date sort once data-listed attributes are added
-      return 0; // best match – keep original order
-    });
-
-    cards.forEach(c => grid.appendChild(c));
-  }
-
-  // ── Watchlist toggle ────────────────────────────
-  function toggleWatch(btn) {
-    btn.classList.toggle('watched');
-    btn.textContent = btn.classList.contains('watched') ? '♥' : '♡';
-    btn.title = btn.classList.contains('watched') ? 'Remove from watchlist' : 'Add to watchlist';
-  }
+// ── SEARCH / FILTER / SORT (unchanged logic) ──────
+function searchItems(e){
+  e.preventDefault();
+  var q=document.getElementById('searchInput').value.trim().toLowerCase();
+  var cards=document.querySelectorAll('#productGrid .product-card');
+  var vis=0;
+  cards.forEach(function(c){
+    if(!q||c.dataset.title.toLowerCase().includes(q)){c.classList.remove('hidden');vis++;}
+    else c.classList.add('hidden');
+  });
+  document.getElementById('resultCount').textContent=vis;
+  document.getElementById('resultCategory').textContent=q?'"'+q+'"':'All Items';
+  document.getElementById('noResults').style.display=vis===0?'block':'none';
+  return false;
+}
+function filterCategory(cat,link){
+  document.querySelectorAll('.category-nav a,.sidebar a').forEach(function(a){a.classList.remove('active')});
+  document.querySelectorAll('.category-nav a[onclick*="\''+cat+'\'"],.sidebar a[onclick*="\''+cat+'\'"]').forEach(function(a){a.classList.add('active')});
+  var cards=document.querySelectorAll('#productGrid .product-card');
+  var vis=0;
+  cards.forEach(function(c){
+    var show=cat==='all'||(cat==='mine'&&c.dataset.mine==='true')||c.dataset.category===cat;
+    if(show){c.classList.remove('hidden');vis++;}else c.classList.add('hidden');
+  });
+  var labels={all:'All Items',us:'US Coins',world:'World Coins',ancient:'Ancient Coins',gold:'Gold & Silver',set:'Mint Sets',error:'Error Coins',note:'Paper Money',mine:'My Listings'};
+  document.getElementById('resultCount').textContent=vis;
+  document.getElementById('resultCategory').textContent=labels[cat]||cat;
+  document.getElementById('noResults').style.display=vis===0?'block':'none';
+  document.getElementById('searchInput').value='';
+  return false;
+}
+function sortItems(val){
+  var grid=document.getElementById('productGrid');
+  var cards=Array.from(grid.querySelectorAll('.product-card'));
+  cards.sort(function(a,b){
+    var pa=parseFloat(a.dataset.price),pb=parseFloat(b.dataset.price);
+    if(val==='price_asc')return pa-pb;
+    if(val==='price_desc')return pb-pa;
+    return 0;
+  });
+  var anchor=document.getElementById('user-listings-anchor');
+  cards.forEach(function(c){grid.insertBefore(c,anchor)});
+}
+function toggleWatch(btn){
+  btn.classList.toggle('watched');
+  btn.textContent=btn.classList.contains('watched')?'♥':'♡';
+}
 </script>
-
-</body>
-</html>
+</body></html>
