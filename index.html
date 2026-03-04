@@ -328,7 +328,7 @@
     <label for="l-image">Image Upload</label>
     <input type="file" id="l-image" accept="image/*" onchange="onListingImageChange()">
     <div class="upload-hint">Auto-crops to a square preview and stores compressed image data for this browser profile.</div>
-    <img id="l-image-preview" alt="">
+    <img id="l-image-preview" alt="Listing image preview">
     <label>Location</label>
     <input type="text" id="l-loc" placeholder="e.g. Honolulu, HI">
     <div class="mrow">
@@ -358,7 +358,11 @@ var ghUser=localStorage.getItem('iwc_gh_user')||'';
 var ghToken=sessionStorage.getItem('iwc_gh_token')||'';
 var pendingSaleId='';
 var listingImageData='';
-var GEMMA_ENDPOINT='http://localhost:11434/api/generate';
+var MAX_IMAGE_DATA_URL_SIZE=1200000;
+var GEMMA_ENDPOINT=(function(){
+  var candidate=localStorage.getItem('iwc_gemma_endpoint')||'http://localhost:11434/api/generate';
+  return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/.+/i.test(candidate)?candidate:'http://localhost:11434/api/generate';
+})();
 
 (function(){
   if(ghUser){
@@ -453,7 +457,8 @@ function renderListings(listings){
     var ship=parseFloat(l.ship||0)===0?'<span class="free-ship">Free shipping</span>':'$'+parseFloat(l.ship).toFixed(2)+' shipping';
     var del=ghUser===l.seller?'<button onclick="deleteListing(\''+l.id+'\')" style="margin-top:6px;padding:3px 10px;background:#fee;border:1px solid #e53238;color:#e53238;border-radius:4px;font-size:11px;cursor:pointer">🗑 Remove</button>':'';
     var sign=ghUser&&ghUser!==l.seller?'<button onclick="openLedgerModal(\''+l.id+'\')" style="margin-top:6px;margin-left:6px;padding:3px 10px;background:#eef8ff;border:1px solid #0064d2;color:#0064d2;border-radius:4px;font-size:11px;cursor:pointer">✍ Sign Buyer Ledger</button>':'';
-    var image=l.image?'<img src="'+esc(l.image)+'" class="listing-photo" alt="'+esc(l.title)+'">':'<div class="coin-placeholder" style="background:radial-gradient(circle,#ffd700 40%,#b8860b 100%)">∞</div>';
+    var safeImage=(l.image&&String(l.image).indexOf('data:image/')===0)?l.image:'';
+    var image=safeImage?'<img src="'+esc(safeImage)+'" class="listing-photo" alt="'+esc(l.title)+'">':'<div class="coin-placeholder" style="background:radial-gradient(circle,#ffd700 40%,#b8860b 100%)">∞</div>';
     card.innerHTML='<div class="card-image">'+image+'<span class="badge-corner badge-new">NEW</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div>'
       +'<div class="card-body"><div class="card-condition">'+esc(l.cond||'Listed')+'</div><div class="card-title"><a href="#">'+esc(l.title)+'</a></div>'
       +'<div class="card-price">$'+parseFloat(l.price).toLocaleString('en-US',{minimumFractionDigits:2})+'</div>'
@@ -498,7 +503,8 @@ function openLedgerModal(id){
   if(!ghUser){openGHModal();return;}
   var listings=JSON.parse(localStorage.getItem('iwc_listings')||'[]');
   var listing=listings.find(function(l){return l.id===id;});
-  if(!listing||listing.seller===ghUser){alert('You can only sign another seller\'s listing.');return;}
+  if(!listing){alert('Listing not found. Please refresh and try again.');return;}
+  if(listing.seller===ghUser){alert('You can only sign another seller\'s listing.');return;}
   pendingSaleId=id;
   document.getElementById('ledger-note').value='';
   document.getElementById('ledger-modal').classList.add('open');
@@ -534,8 +540,15 @@ function onListingImageChange(){
       var canvas=document.createElement('canvas');
       canvas.width=700;canvas.height=700;
       var ctx=canvas.getContext('2d');
+      if(!ctx){alert('Image preview is unavailable in this browser.');return;}
       ctx.drawImage(img,sx,sy,size,size,0,0,700,700);
       listingImageData=canvas.toDataURL('image/jpeg',0.88);
+      if(listingImageData.length>MAX_IMAGE_DATA_URL_SIZE){
+        alert('Image exceeds ~1.14MB limit for browser storage. Please choose a smaller image or reduce quality.');
+        document.getElementById('l-image').value='';
+        listingImageData='';
+        return;
+      }
       var preview=document.getElementById('l-image-preview');
       preview.src=listingImageData;
       preview.style.display='block';
@@ -564,16 +577,23 @@ async function autofillWithGemma(btn){
     var loc=document.getElementById('l-loc').value.trim();
     var draft=fallbackDraft();
     var prompt='Create concise marketplace JSON with keys title and description for a collectible coin listing. Category: '+catText+'. Condition: '+(cond||'Unknown')+'. Location: '+(loc||'Unknown')+'. Keep title under 90 chars.';
-    var res=await fetch(GEMMA_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'gemma:2b',stream:false,prompt:prompt})});
+    var controller=new AbortController();
+    var timeout=setTimeout(function(){controller.abort();},5000);
+    var res;
+    try{
+      res=await fetch(GEMMA_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'gemma:2b',stream:false,prompt:prompt}),signal:controller.signal});
+    }finally{
+      clearTimeout(timeout);
+    }
     var out=draft;
     if(res.ok){
       var data=await res.json();
       var raw=(data&&data.response)||'';
       try{
-        var jsonMatch=raw.match(/\{[\s\S]*\}/);
+        var jsonMatch=raw.match(/\{[\s\S]*?\}/);
         var parsed=JSON.parse(jsonMatch?jsonMatch[0]:raw);
         out={title:(parsed.title||draft.title),description:(parsed.description||draft.description)};
-      }catch(_){out=draft;}
+      }catch(err){console.warn('Gemma parse fallback',err);out=draft;}
     }
     if(!document.getElementById('l-title').value.trim())document.getElementById('l-title').value=out.title;
     if(!document.getElementById('l-desc').value.trim())document.getElementById('l-desc').value=out.description;
