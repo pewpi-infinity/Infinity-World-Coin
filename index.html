@@ -25,6 +25,12 @@
     .gh-note a{color:#0064d2}
     .gh-note code{background:#eee;padding:1px 4px;border-radius:3px}
     #add-listing-btn{background:linear-gradient(90deg,#e53238,#0064d2,#f5af02,#86b817);color:#fff;border:none;padding:7px 16px;border-radius:5px;font-weight:700;font-size:13px;cursor:pointer;margin-left:8px}
+    .upload-hint{font-size:11px;color:#666;margin-top:4px}
+    #l-image-preview{margin-top:8px;width:160px;height:160px;border:1px solid #ddd;border-radius:6px;object-fit:cover;display:none}
+    .listing-photo{width:100%;height:100%;object-fit:cover;border-radius:10px}
+    .ledger-card{margin-top:18px;background:#fff;border:1px solid #e7e7e7;border-radius:10px;padding:12px}
+    .ledger-entry{font-size:12px;color:#444;padding:7px 0;border-bottom:1px solid #f0f0f0}
+    .ledger-entry:last-child{border-bottom:none}
   </style>
 </head>
 <body>
@@ -250,6 +256,10 @@
 
       <div id="user-listings-anchor"></div>
     </div>
+    <div class="ledger-card" id="history-card">
+      <h3 style="margin:0 0 8px 0;font-size:15px">My Listing Ledger</h3>
+      <div id="ledger-history-list" class="muted" style="font-size:12px">Sign in with GitHub to view your listing history.</div>
+    </div>
 
     <div class="pagination" id="pagination">
       <span class="active">1</span><a href="#">2</a><a href="#">3</a><a href="#">4</a><a href="#">›</a>
@@ -315,11 +325,28 @@
     <input type="text" id="l-cond" placeholder="e.g. MS65, AU58, Pre-Owned">
     <label>Description</label>
     <textarea id="l-desc" placeholder="Describe the coin…"></textarea>
+    <label for="l-image">Image Upload</label>
+    <input type="file" id="l-image" accept="image/*" onchange="onListingImageChange()">
+    <div class="upload-hint">Auto-crops to a square preview and stores compressed image data for this browser profile.</div>
+    <img id="l-image-preview" alt="">
     <label>Location</label>
     <input type="text" id="l-loc" placeholder="e.g. Honolulu, HI">
     <div class="mrow">
+      <button class="mbtn cancel" onclick="autofillWithGemma(this)" type="button">Auto-fill with Gemma</button>
       <button class="mbtn confirm" onclick="submitListing()">Post Listing</button>
       <button class="mbtn cancel" onclick="closeModal('listing-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="iwc-modal" id="ledger-modal">
+  <div class="iwc-box">
+    <h3>✍ Sign Buyer Ledger</h3>
+    <label>Your Buyer Note</label>
+    <textarea id="ledger-note" placeholder="e.g. Purchased for collection, payment pending confirmation"></textarea>
+    <div class="mrow">
+      <button class="mbtn confirm" onclick="signLedgerPurchase()">Sign &amp; Mark Sold</button>
+      <button class="mbtn cancel" onclick="closeModal('ledger-modal')">Cancel</button>
     </div>
   </div>
 </div>
@@ -328,7 +355,10 @@
 var PAYPAL='marvaseater@gmail.com';
 var REPO='pewpi-infinity/Infinity-World-Coin';
 var ghUser=localStorage.getItem('iwc_gh_user')||'';
-var ghToken=localStorage.getItem('iwc_gh_token')||'';
+var ghToken=sessionStorage.getItem('iwc_gh_token')||'';
+var pendingSaleId='';
+var listingImageData='';
+var GEMMA_ENDPOINT='http://localhost:11434/api/generate';
 
 (function(){
   if(ghUser){
@@ -347,7 +377,8 @@ function doGHLogin(){
   if(!u||!t){alert('Please enter both fields.');return;}
   ghUser=u;ghToken=t;
   localStorage.setItem('iwc_gh_user',u);
-  localStorage.setItem('iwc_gh_token',t);
+  localStorage.removeItem('iwc_gh_token');
+  sessionStorage.setItem('iwc_gh_token',t);
   document.getElementById('greeting-text').innerHTML='Hi, <strong>'+u+'</strong>! <a href="#" onclick="signOut();return false" style="color:#e53238">Sign out</a>';
   document.getElementById('account-link').textContent='@'+u;
   closeModal('gh-modal');
@@ -357,9 +388,10 @@ function doGHLogin(){
 function signOut(){
   ghUser='';ghToken='';
   localStorage.removeItem('iwc_gh_user');
-  localStorage.removeItem('iwc_gh_token');
+  sessionStorage.removeItem('iwc_gh_token');
   document.getElementById('greeting-text').innerHTML='Hi! <a href="#" onclick="openGHModal();return false">Sign in with GitHub</a>';
   document.getElementById('account-link').textContent='My Account';
+  renderLedgerHistory(JSON.parse(localStorage.getItem('iwc_listings')||'[]'));
 }
 
 function loadListings(){
@@ -390,10 +422,28 @@ function saveListings(listings){
   }).catch(function(e){console.warn('sync failed',e);});
 }
 
+function esc(v){
+  return String(v||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+}
+
+function renderLedgerHistory(listings){
+  var box=document.getElementById('ledger-history-list');
+  if(!ghUser){box.textContent='Sign in with GitHub to view your listing history.';return;}
+  var mine=listings.filter(function(l){return l.seller===ghUser||l.soldTo===ghUser;});
+  if(!mine.length){box.textContent='No ledger entries yet.';return;}
+  box.innerHTML=mine.slice().reverse().map(function(l){
+    var status=l.sold?'Sold to @'+esc(l.soldTo||'buyer'):'Active listing';
+    var when=l.soldAt?new Date(l.soldAt).toLocaleString():(l.date?new Date(l.date).toLocaleString():'');
+    return '<div class="ledger-entry"><strong>'+esc(l.title)+'</strong> — '+status+(when?' <span style="color:#777">('+when+')</span>':'')+'</div>';
+  }).join('');
+}
+
 function renderListings(listings){
   document.querySelectorAll('.user-listing-card').forEach(function(el){el.remove();});
   var anchor=document.getElementById('user-listings-anchor');
-  listings.forEach(function(l){
+  var activeListings=listings.filter(function(l){return !l.sold;});
+  renderLedgerHistory(listings);
+  activeListings.forEach(function(l){
     var card=document.createElement('div');
     card.className='product-card user-listing-card';
     card.dataset.category=l.cat||'us';
@@ -401,15 +451,17 @@ function renderListings(listings){
     card.dataset.price=l.price||'0';
     card.dataset.mine='true';
     var ship=parseFloat(l.ship||0)===0?'<span class="free-ship">Free shipping</span>':'$'+parseFloat(l.ship).toFixed(2)+' shipping';
-    var del=ghUser?'<button onclick="deleteListing(\''+l.id+'\')" style="margin-top:6px;padding:3px 10px;background:#fee;border:1px solid #e53238;color:#e53238;border-radius:4px;font-size:11px;cursor:pointer">🗑 Remove</button>':'';
-    card.innerHTML='<div class="card-image"><div class="coin-placeholder" style="background:radial-gradient(circle,#ffd700 40%,#b8860b 100%)">∞</div><span class="badge-corner badge-new">NEW</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div>'
-      +'<div class="card-body"><div class="card-condition">'+(l.cond||'Listed')+'</div><div class="card-title"><a href="#">'+l.title+'</a></div>'
+    var del=ghUser===l.seller?'<button onclick="deleteListing(\''+l.id+'\')" style="margin-top:6px;padding:3px 10px;background:#fee;border:1px solid #e53238;color:#e53238;border-radius:4px;font-size:11px;cursor:pointer">🗑 Remove</button>':'';
+    var sign=ghUser&&ghUser!==l.seller?'<button onclick="openLedgerModal(\''+l.id+'\')" style="margin-top:6px;margin-left:6px;padding:3px 10px;background:#eef8ff;border:1px solid #0064d2;color:#0064d2;border-radius:4px;font-size:11px;cursor:pointer">✍ Sign Buyer Ledger</button>':'';
+    var image=l.image?'<img src="'+esc(l.image)+'" class="listing-photo" alt="'+esc(l.title)+'">':'<div class="coin-placeholder" style="background:radial-gradient(circle,#ffd700 40%,#b8860b 100%)">∞</div>';
+    card.innerHTML='<div class="card-image">'+image+'<span class="badge-corner badge-new">NEW</span><button class="watchlist-btn" onclick="toggleWatch(this)">♡</button></div>'
+      +'<div class="card-body"><div class="card-condition">'+esc(l.cond||'Listed')+'</div><div class="card-title"><a href="#">'+esc(l.title)+'</a></div>'
       +'<div class="card-price">$'+parseFloat(l.price).toLocaleString('en-US',{minimumFractionDigits:2})+'</div>'
-      +'<div class="card-shipping">'+ship+'</div>'+(l.loc?'<div class="card-location">📍 '+l.loc+'</div>':'')
-      +(l.desc?'<div style="font-size:11px;color:#555;margin-top:4px">'+l.desc+'</div>':'')+del+'</div>'
+      +'<div class="card-shipping">'+ship+'</div>'+(l.loc?'<div class="card-location">📍 '+esc(l.loc)+'</div>':'')
+      +(l.desc?'<div style="font-size:11px;color:#555;margin-top:4px">'+esc(l.desc)+'</div>':'')+del+sign+'</div>'
       +'<div class="card-footer"><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">'
       +'<input type="hidden" name="cmd" value="_xclick"><input type="hidden" name="business" value="'+PAYPAL+'">'
-      +'<input type="hidden" name="item_name" value="'+l.title+'"><input type="hidden" name="amount" value="'+parseFloat(l.price).toFixed(2)+'">'
+      +'<input type="hidden" name="item_name" value="'+esc(l.title)+'"><input type="hidden" name="amount" value="'+parseFloat(l.price).toFixed(2)+'">'
       +'<input type="hidden" name="currency_code" value="USD"><input type="hidden" name="shipping" value="'+parseFloat(l.ship||0).toFixed(2)+'">'
       +'<button type="submit" class="btn-buy-now">Buy It Now — <span class="pp-logo"><span class="pp-blue">Pay</span><span class="pp-sky">Pal</span></span></button></form></div>';
     anchor.parentNode.insertBefore(card,anchor);
@@ -425,19 +477,113 @@ function submitListing(){
   var title=document.getElementById('l-title').value.trim();
   var price=document.getElementById('l-price').value;
   if(!title||!price){alert('Title and price required.');return;}
-  var l={id:Date.now().toString(36),title:title,cat:document.getElementById('l-cat').value,price:parseFloat(price).toFixed(2),ship:parseFloat(document.getElementById('l-ship').value||0).toFixed(2),cond:document.getElementById('l-cond').value.trim(),desc:document.getElementById('l-desc').value.trim(),loc:document.getElementById('l-loc').value.trim(),seller:ghUser,date:new Date().toISOString()};
+  var l={id:Date.now().toString(36),title:title,cat:document.getElementById('l-cat').value,price:parseFloat(price).toFixed(2),ship:parseFloat(document.getElementById('l-ship').value||0).toFixed(2),cond:document.getElementById('l-cond').value.trim(),desc:document.getElementById('l-desc').value.trim(),loc:document.getElementById('l-loc').value.trim(),image:listingImageData,seller:ghUser,date:new Date().toISOString(),sold:false};
   var listings=JSON.parse(localStorage.getItem('iwc_listings')||'[]');
   listings.unshift(l);
   saveListings(listings);
   closeModal('listing-modal');
-  ['l-title','l-price','l-cond','l-desc','l-loc'].forEach(function(id){document.getElementById(id).value='';});
+  ['l-title','l-price','l-cond','l-desc','l-loc','l-image'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('l-ship').value='0';
+  document.getElementById('l-image-preview').style.display='none';
+  listingImageData='';
 }
 
 function deleteListing(id){
   if(!confirm('Remove this listing?'))return;
   var listings=JSON.parse(localStorage.getItem('iwc_listings')||'[]').filter(function(l){return l.id!==id;});
   saveListings(listings);
+}
+
+function openLedgerModal(id){
+  if(!ghUser){openGHModal();return;}
+  var listings=JSON.parse(localStorage.getItem('iwc_listings')||'[]');
+  var listing=listings.find(function(l){return l.id===id;});
+  if(!listing||listing.seller===ghUser){alert('You can only sign another seller\'s listing.');return;}
+  pendingSaleId=id;
+  document.getElementById('ledger-note').value='';
+  document.getElementById('ledger-modal').classList.add('open');
+}
+
+function signLedgerPurchase(){
+  if(!pendingSaleId||!ghUser)return;
+  var note=document.getElementById('ledger-note').value.trim();
+  var listings=JSON.parse(localStorage.getItem('iwc_listings')||'[]');
+  listings=listings.map(function(l){
+    if(l.id!==pendingSaleId)return l;
+    l.sold=true;
+    l.soldTo=ghUser;
+    l.ledgerNote=note;
+    l.soldAt=new Date().toISOString();
+    return l;
+  });
+  saveListings(listings);
+  closeModal('ledger-modal');
+  pendingSaleId='';
+}
+
+function onListingImageChange(){
+  var file=document.getElementById('l-image').files[0];
+  if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var img=new Image();
+    img.onload=function(){
+      var size=Math.min(img.width,img.height);
+      var sx=(img.width-size)/2;
+      var sy=(img.height-size)/2;
+      var canvas=document.createElement('canvas');
+      canvas.width=700;canvas.height=700;
+      var ctx=canvas.getContext('2d');
+      ctx.drawImage(img,sx,sy,size,size,0,0,700,700);
+      listingImageData=canvas.toDataURL('image/jpeg',0.88);
+      var preview=document.getElementById('l-image-preview');
+      preview.src=listingImageData;
+      preview.style.display='block';
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function fallbackDraft(){
+  var catEl=document.getElementById('l-cat');
+  var catText=(catEl.selectedOptions&&catEl.selectedOptions[0]?catEl.selectedOptions[0].textContent:'US Coins');
+  var cond=document.getElementById('l-cond').value.trim()||'Collector Grade';
+  var loc=document.getElementById('l-loc').value.trim();
+  var title=(document.getElementById('l-title').value.trim()||('Rare '+catText+' Coin - '+cond)).slice(0,90);
+  var desc='Carefully listed '+catText.toLowerCase()+' item in '+cond+' condition.'+(loc?' Located in '+loc+'.':'');
+  return {title:title,description:desc};
+}
+
+async function autofillWithGemma(btn){
+  if(btn)btn.disabled=true;
+  try{
+    var catEl=document.getElementById('l-cat');
+    var catText=(catEl.selectedOptions&&catEl.selectedOptions[0]?catEl.selectedOptions[0].textContent:'US Coins');
+    var cond=document.getElementById('l-cond').value.trim();
+    var loc=document.getElementById('l-loc').value.trim();
+    var draft=fallbackDraft();
+    var prompt='Create concise marketplace JSON with keys title and description for a collectible coin listing. Category: '+catText+'. Condition: '+(cond||'Unknown')+'. Location: '+(loc||'Unknown')+'. Keep title under 90 chars.';
+    var res=await fetch(GEMMA_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'gemma:2b',stream:false,prompt:prompt})});
+    var out=draft;
+    if(res.ok){
+      var data=await res.json();
+      var raw=(data&&data.response)||'';
+      try{
+        var jsonMatch=raw.match(/\{[\s\S]*\}/);
+        var parsed=JSON.parse(jsonMatch?jsonMatch[0]:raw);
+        out={title:(parsed.title||draft.title),description:(parsed.description||draft.description)};
+      }catch(_){out=draft;}
+    }
+    if(!document.getElementById('l-title').value.trim())document.getElementById('l-title').value=out.title;
+    if(!document.getElementById('l-desc').value.trim())document.getElementById('l-desc').value=out.description;
+  }catch(_){
+    var localDraft=fallbackDraft();
+    if(!document.getElementById('l-title').value.trim())document.getElementById('l-title').value=localDraft.title;
+    if(!document.getElementById('l-desc').value.trim())document.getElementById('l-desc').value=localDraft.description;
+  }finally{
+    if(btn)btn.disabled=false;
+  }
 }
 
 function searchItems(e){
